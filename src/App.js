@@ -3,14 +3,16 @@ import './App.css';
 import uuid from 'uuid';
 import Projects from './components/Projects';
 import AddProject from './components/AddProject'; 
-
+import Todos from './components/Todos';
+import $ from 'jquery';
 
 
 class App extends Component {
   constructor(){
     super();
     this.state={
-      projects: []
+      projects: [],
+      todos: []
     }
   }
 
@@ -20,15 +22,25 @@ class App extends Component {
     this.getTodos();
   }
 
-
-
   componentDidMount(){
     this.getProjects();
     this.getTodos();
   }
 
   getTodos(){
-
+    $.ajax({
+      url: 'https://jsonplaceholder.typicode.com/todos',
+      dataType: 'json',
+      cache: false,
+      success: function(data){
+        this.setState({todos: data}, function(){
+          console.log(this.state);
+        })
+      }.bind(this),
+      error: function(xhr, status, err){
+        console.log(err);
+      }
+    })
   }
 
   getProjects(){
@@ -74,6 +86,7 @@ class App extends Component {
       <div className="App">
         <AddProject addProject={this.handleAddProject.bind(this)} />
         <Projects onDelete={this.handleDeleteProject.bind(this)} projects={this.state.projects} />
+        <Todos todos={this.state.todos} />
       </div>
     );
   }
